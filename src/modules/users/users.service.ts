@@ -1,70 +1,55 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-    private users = [
-        { id: 1, name: 'John', email: 'john@gmail.com' },
-        { id: 2, name: 'Jane', email: 'jane@gmail.com' },
-        { id: 3, name: 'Doe', email: 'doe@gmail.com' },
-    ];      
+    // Constructor nhận vào Repository<User> thông qua dependency injection
+    // @InjectRepository(User) là decorator để inject repository của entity User
+    constructor(
+        @InjectRepository(User)
+        private usersRepository: Repository<User>,
+    ) {}
 
-    findAll() {
-        return this.users;
+    // Phương thức tạo mới một user
+    // Nhận vào createUserDto chứa thông tin user cần tạo
+    // Trả về Promise chứa user đã được tạo
+    async create(createUserDto: CreateUserDto): Promise<User> {
+        // Tạo instance mới của entity User từ createUserDto
+        const user = this.usersRepository.create(createUserDto);
+        // Lưu user vào database và trả về kết quả
+        return await this.usersRepository.save(user);
     }
 
-    // Phương thức findOne nhận vào một tham số id kiểu number
-    // Sử dụng phương thức find() của mảng để tìm user có id trùng khớp
-    // find() sẽ tự động truyền từng phần tử của mảng this.users vào arrow function
-    // - this.users là mảng users được khai báo ở đầu class: private users = [...]
-    // - Với mỗi lần lặp, find() sẽ gán một phần tử của mảng this.users vào biến user
-    // - Arrow function (user => user.id === id) sẽ kiểm tra id của user hiện tại
-    // - Trả về user đầu tiên thỏa mãn điều kiện, hoặc undefined nếu không tìm thấy
-    findOne(id: number) {
-        return this.users.find(user => user.id === id);
+    // Phương thức lấy tất cả users
+    // Trả về Promise chứa mảng các user
+    findAll(): Promise<User[]> {
+        return this.usersRepository.find({ relations: ['tasks']}); 
+      }
+
+    // Phương thức tìm một user theo id
+    // Nhận vào id của user cần tìm
+    // Trả về Promise chứa user tìm được hoặc throw NotFoundException
+    async findOne(id: number): Promise<User> {
+        const user = await this.usersRepository.findOne({ where: { id }, relations: ['tasks']}); // 
+        if (!user) throw new NotFoundException('User not found');
+        return user;
     }
 
-    // Dấu ... (spread operator) được sử dụng để:
-    // 1. Trong { id: this.users.length + 1, ...createUserDto }:
-    //    - Tạo một object mới với thuộc tính id
-    //    - Sau đó copy tất cả thuộc tính từ createUserDto vào object mới
-    //    - VD: Nếu createUserDto = { name: "John", email: "john@gmail.com", password: "123456" }
-    //    - Kết quả: { id: 4, name: "John", email: "john@gmail.com", password: "123456" }
-    create(createUserDto: CreateUserDto) {
-        const newUser = { id: this.users.length + 1, ...createUserDto };
-        this.users.push(newUser);
-        return newUser;
-    }   
-
-    update(id: number, updateUserDto: UpdateUserDto) {
-        const user = this.findOne(id);
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-        // Cú pháp return { ...user, ...updateUserDto }:
-        // - Dấu {} tạo một object mới
-        // - ...user spread tất cả thuộc tính của user vào object mới
-        // - ...updateUserDto spread và ghi đè các thuộc tính từ updateUserDto
-        // - Thứ tự spread quan trọng: thuộc tính spread sau sẽ ghi đè thuộc tính trước
-        // - Kết quả là một object mới với các thuộc tính được merge từ cả 2 object
-        // Tạo object mới với các thuộc tính được merge từ user và updateUserDto
-        const updatedUser = {
-            ...user,
-            ...updateUserDto,
-        };
-
-        // Cập nhật user trong mảng this.users
-        const index = this.users.findIndex(u => u.id === id);
-        this.users[index] = updatedUser;
-
-        return updatedUser;
+    // Phương thức cập nhật thông tin user
+    // Nhận vào id và updateUserDto chứa thông tin cần cập nhật
+    // Trả về Promise chứa user đã được cập nhật
+    async update(id: number, dto: UpdateUserDto): Promise<User> {
+        const user = await this.findOne(id);
+        Object.assign(user, dto);
+        return this.usersRepository.save(user);
     }
 
-    remove(id: number) {
-        this.users = this.users.filter(user => user.id !== id);
-        return {
-            message: 'User deleted successfully',
-        };
+    async remove(id: number): Promise<void> {
+        const user = await this.findOne(id);
+        await this.usersRepository.remove(user);
     }
 }
