@@ -1,8 +1,9 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from '../entities/user.entity';
 // PartialType là một utility type của @nestjs/mapped-types
 // Nó tạo ra một class mới với tất cả các thuộc tính của class gốc (CreateUserDto) 
 // nhưng tất cả các thuộc tính đều là optional (không bắt buộc)
@@ -17,4 +18,14 @@ export class UpdateUserDto {
     @IsOptional() 
     @IsString()
     password?: string;
+
+    @ApiProperty({ example: 'john.doe@example.com', description: 'The email of the user' })
+    @IsOptional()
+    @IsString()
+    email?: string;
+
+    @ApiProperty({ example: 'STAFF', description: 'The role of the user' })
+    @IsOptional()
+    @IsEnum(UserRole)
+    role?: UserRole;
 } 

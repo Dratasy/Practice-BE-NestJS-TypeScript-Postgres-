@@ -6,12 +6,14 @@ import { UsersModule } from './modules/users/users.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AppDataSource } from './modules/core/database/data-source';
+import { AuthModule } from './modules/core/auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(AppDataSource.options),
     UsersModule,
     TasksModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

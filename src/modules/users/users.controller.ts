@@ -1,13 +1,20 @@
 import {
-    Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe
+    Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe,
+    UseGuards
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/modules/core/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { UserRole } from './entities/user.entity';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('users')
+@ApiBearerAuth('access_token')
 @Controller('users')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
@@ -19,7 +26,8 @@ export class UsersController {
     
 
     @Get()
-    @ApiOperation({ summary: 'Get all users' })
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({ summary: 'Get all users (ADMIN only)' })
     findAll() {
         return this.usersService.findAll();
     }

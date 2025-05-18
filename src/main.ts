@@ -11,6 +11,16 @@ async function bootstrap() {
     .setDescription('The User Management API description')
     .setVersion('1.0')
     .addTag('users')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        in: 'header',
+      },
+      'access_token',  // <== Tên scheme ở đây
+    )
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
