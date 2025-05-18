@@ -1,19 +1,19 @@
 # NestJS User-Task Management API
 
-## ✨ Giới thiệu
+## ✨ Introduction
 
-API backend dựa trên [NestJS](https://nestjs.com/) cung cấp các chức năng:
+A backend API built with [NestJS](https://nestjs.com/) that provides:
 
-* Đăng ký / Đăng nhập / Đăng xuất
-* Xác thực bằng JWT
-* Phân quyền theo vai trò (Admin, Staff)
-* CRUD User
-* CRUD Task (mỗi Task thuộc 1 User)
-* Swagger UI tài liệu API
+* User Registration / Login / Logout
+* JWT-based Authentication
+* Role-based Authorization (Admin, Staff)
+* User CRUD
+* Task CRUD (each Task belongs to a User)
+* API documentation via Swagger UI
 
 ---
 
-## 🧰 Công nghệ
+## 🧰 Technologies
 
 * **NestJS**
 * **TypeORM**
@@ -23,78 +23,77 @@ API backend dựa trên [NestJS](https://nestjs.com/) cung cấp các chức nă
 
 ---
 
-## 📁 Cài đặt
+## 📁 Installation
 
 ```bash
-# Clone repo
+# Clone the repo
 $ git clone <repo-url>
 $ cd <project-folder>
 
-# Cài đặt package
+# Install dependencies
 $ npm install
 ```
 
-## Cấu hình cơ sở dữ liệu
-Cấu hình cơ sở dữ liệu được định nghĩa tại:
-src/modules/core/database/data-source.ts
+## Database Configuration
 
-Bạn có thể thiết lập các thông số kết nối như host, port, username, password, database name thông qua biến môi trường hoặc chỉnh sửa trực tiếp trong file này (khuyến khích dùng biến môi trường để linh hoạt hơn).
+Database settings are defined in:  
+`src/modules/core/database/data-source.ts`
 
+You can configure the connection (host, port, username, password, database name) via environment variables or by editing this file directly (environment variables are recommended for flexibility).
 
+---
 
-
-
-## ▶️ Khởi chạy
+## ▶️ Running the App
 
 ```bash
-# Chạy dev mode
+# Development mode
 $ npm run start:dev
 
-# Hoặc production
+# Or production
 $ npm run build
 $ npm run start:prod
 ```
 
 ---
 
-## 📄 Tài liệu Swagger
+## 📄 Swagger Documentation
 
-Truy cập: [http://localhost:3000/api](http://localhost:3000/api)
-
----
-
-## 🔐 Xác thực & Phân quyền
-
-* Dùng `@UseGuards(JwtAuthGuard, RolesGuard)` để bảo vệ route
-* Dữ liệu JWT bao gồm: `sub`, `email`, `role`
-* Vai trò (`UserRole`):
-
-  * `ADMIN`: Quản trị tối cao
-  * `STAFF`: Mặc định khi đăng ký
+Access it at: [http://localhost:3000/api](http://localhost:3000/api)
 
 ---
 
-## 📂 Cấu trúc thư mục
+## 🔐 Authentication & Authorization
+
+* Use `@UseGuards(JwtAuthGuard, RolesGuard)` to protect routes.
+* JWT payload includes: `sub`, `email`, `role`
+* User roles (`UserRole`):
+
+  * `ADMIN`: Super Administrator
+  * `STAFF`: Default role upon registration
+
+---
+
+## 📂 Folder Structure
 
 ```
 src/
-├── common/               # Guard & Decorator dùng chung
+├── common/               # Shared guards & decorators
 ├── modules/
-    ├── core/             # Xác thực, JWT, phân quyền, database setting
-│   ├── users/            # CRUD User + Role
-│   └── tasks/            # CRUD Task
+│   ├── core/             # Auth, JWT, roles, database settings
+│   ├── users/            # User CRUD + roles
+│   └── tasks/            # Task CRUD
 ├── app.module.ts         # Root module
 └── main.ts               # Entry point
 ```
 
 ---
 
-## ✅ Kế hoạch tiếp theo
+## ✅ Next Plans
 
-* Refresh token
-* Gửi email xác thực
-* Phân trang, tìm kiếm Task
-* UI client (React / Vue)
+- [ ] Refresh token support  
+- [ ] Email verification  
+- [ ] Task pagination & search  
+- [ ] Client UI (React / Vue)
 
 ---
 
