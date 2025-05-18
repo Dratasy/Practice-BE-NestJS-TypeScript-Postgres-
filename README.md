@@ -80,7 +80,7 @@ Truy cập: [http://localhost:3000/api](http://localhost:3000/api)
 src/
 ├── common/               # Guard & Decorator dùng chung
 ├── modules/
-    ├── auth/             # Xác thực, JWT, login
+    ├── core/             # Xác thực, JWT, phân quyền, database setting
 │   ├── users/            # CRUD User + Role
 │   └── tasks/            # CRUD Task
 ├── app.module.ts         # Root module
